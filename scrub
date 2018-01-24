@@ -1,0 +1,15 @@
+#!/bin/bash
+
+grep passwordType $1 | sed -e 's/^.*Generated//' -e 's/"//' -e 's/,//' \
+   | cut -c 1-3 > filepwt
+grep siteCounter $1 | sed -e 's/^.*Counter": //' -e 's/,//' > filesc
+grep siteName $1 | sed -e 's/^.*Name": "//' -e 's/",//' > filesn
+grep userName $1 | sed -e 's/^.*Name": "//' -e 's/"$//' > fileun
+
+paste -d' ' filepwt filesc filesn fileun | \
+   awk ' { \
+   if ($4 != "")  { print $1" "$2" "$3" <"$4">" } \
+   else { print $1" "$2" "$3 } }' | \
+   sort -k 3
+
+rm filepwt filesc filesn fileun
